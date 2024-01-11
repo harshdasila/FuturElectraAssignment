@@ -83,21 +83,118 @@ app.post('/api/v1/books',async(req,res)=>{
 
 app.get('/api/v1/books',async (req,res)=>{
     const booksData = await Book.find({});
-    console.log(booksData)
     const api_response = {
         status_code: 200,
         status: "success",
         data: booksData
     }
-    res.json({api_response});
+    res.send(api_response);
 })
 
-app.post('/api/v1/books/:id',async(req,res)=>{
-    const _id = req.query.id;
-    console.log(_id);
-    res.send({
-        mssg: "received"
-    })
+app.post('/api/v1/books/:id/update', async (req, res) => {
+    try {
+        const ID = req.params.id;
+        const {
+            name,
+            isbn,
+            authors,
+            number_of_pages,
+            publisher,
+            country,
+            release_date
+        } = req.body;
+
+        const inputData = {
+            name,
+            isbn,
+            authors,
+            number_of_pages,
+            publisher,
+            country,
+            release_date
+        };
+
+        const data = await Book.findOneAndUpdate(
+            { _id: ID },
+            { $set: inputData },
+            { new: true } 
+        );
+
+        if (!data) {
+            res.status(404).json({ message: 'Book not found' });
+            return; 
+        }
+
+        const api_response = {
+            status_code: 200,
+            status: 'success',
+            message: `The Book ${data.name} has been updated successfully`,
+            data: data
+        };
+
+        res.status(200).json(api_response);
+    } catch (error) {
+        if (error.name === 'CastError') {
+            // Handle invalid ID format
+            res.status(400).json({ message: 'Invalid book ID format' });
+        } else {
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    }
+});
+
+app.delete('/api/v1/books/:id',async(req,res)=>{
+    
+    try{
+        const ID = req.params.id;
+        const deleteBook = await Book.findByIdAndDelete(ID);
+        console.log(deleteBook)
+        if(deleteBook){
+            res.send({
+                status_code: 200,
+                status: 'success',
+                message: `The Book ${deleteBook.name} has been deleted successfully`,
+                data: []
+            })
+        }
+        else{
+            res.send({
+                mssg: "NOT DELETED"
+            })
+        }
+    }
+    catch (error) {
+        if (error.name === 'CastError') {
+            // Handle invalid ID format
+            res.status(400).json({ message: 'Invalid book ID format' });
+        } else {
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    }
+    
 })
+
+app.get('/api/v1/books/:id', async(req,res)=>{
+    try{
+        const ID = req.params.id;
+        const book = await Book.findOne({_id: ID});
+        const api_response = {
+        status_code: 200,
+        status: "success",
+        data: book
+    }
+    res.send(api_response);
+    }
+    catch (error) {
+        if (error.name === 'CastError') {
+            // Handle invalid ID format
+            res.status(400).json({ message: 'Invalid book ID format' });
+        } else {
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    }
+    
+})
+
 
 app.listen(port,()=>{console.log(`listning on port ${port}`)})
