@@ -1,10 +1,13 @@
 const express = require('express');
 const app = express();
+const cors = require('cors')
 const port = 8080;
 const {Book}  = require('./db')
 app.use(express.json());
+app.use(cors());
 
 app.get("/api/external-books", async (req, res) => {
+    
     try {
         const bookName = (req.query.name);
         const response = await fetch(`https://anapioficeandfire.com/api/books?name=${bookName}`);
@@ -30,7 +33,7 @@ app.get("/api/external-books", async (req, res) => {
             data: filteredData
         }
         
-        res.json(api_response)
+        res.send(api_response)
 
     } catch (error) {
         console.error(error);
@@ -39,14 +42,14 @@ app.get("/api/external-books", async (req, res) => {
 });
 
 app.post('/api/v1/books',async(req,res)=>{
-    const name = req.body.name;
+    const name = req.body.bookName;
     const isbn = req.body.isbn;
     const authors = req.body.authors;
-    const number_of_pages = req.body.number_of_pages;
-    const publisher = req.body.publisher;
+    const number_of_pages = req.body.numberOfPages;
+    const publisher = req.body.publishers;
     const country = req.body.country;
-    const release_date = req.body.release_date;
-    const id = parseInt(Math.random()*100);
+    const release_date = req.body.releaseDate;
+    // const id = parseInt(Math.random()*100);
 
     const inputData = {
         name,
@@ -148,7 +151,7 @@ app.delete('/api/v1/books/:id',async(req,res)=>{
     try{
         const ID = req.params.id;
         const deleteBook = await Book.findByIdAndDelete(ID);
-        console.log(deleteBook)
+        // .log(deleteBook)console
         if(deleteBook){
             res.send({
                 status_code: 200,
