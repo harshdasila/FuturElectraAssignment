@@ -5,6 +5,7 @@ This is a MERN (MongoDB, Express.js, React, Node.js) stack application that allo
 ## Getting Started
 
 Follow these instructions to get a copy of the project up and running on your local machine.
+I have used tailwind for styling
 
 ### Prerequisites
 
