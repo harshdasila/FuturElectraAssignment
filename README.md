@@ -10,7 +10,7 @@ Follow these instructions to get a copy of the project up and running on your lo
 
 Make sure you have the following installed on your machine:
 
-- Node.js
+- Node.js (As mentioned the backend is running on localhost:8080 as api rountes are designed that way)
 - npm (Node Package Manager)
 - MongoDB
 
